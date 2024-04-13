@@ -1,24 +1,24 @@
-import React from 'react';
 import { View, Text, Button, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native';
 import { Card } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native'; 
+import { useState, React, useEffect } from 'react';
 
-const ZonasScreen = () => {
+const ZonasScreen = ({ route }) => {
+  const { usuario } = route.params;
   const navigation = useNavigation();
+  const [zonas, setZonas] = useState([]);
 
-  const zonas = [
-    'Edificio A',
-    'Edificio B',
-    'Edificio C',
-    'Edificio D',
-    'Pesado 1',
-    'Pesado 2',
-    'Rectoria'
-  ];
+  useEffect(() => {
+    fetch(`http://127.0.0.1:8000/api/zonas?ids=${usuario.join(',')}`)
+      .then(response => response.json())
+      .then(data => setZonas(data.zonas))
+      .catch(error => console.error('Error:', error));
+  }, [usuario]);
 
   const handleAdministrar = (zona) => {
-    navigation.navigate('AdministrarZona',  {zona} );
+    navigation.navigate('AdministrarZona', { zona: zona.id });
   };
+  
 
   return (
     <View style={styles.container}>
@@ -29,13 +29,14 @@ const ZonasScreen = () => {
         </View>
 
         {zonas.map((zona, index) => (
-            <Card key={index} containerStyle={styles.cardContainer}>
-                <Card.Title style={styles.cardTitle}>{zona}</Card.Title>
-                <TouchableOpacity onPress={() => handleAdministrar(zona)} style={styles.administrarButton}>
-                    <Text>Administrar</Text>
-                </TouchableOpacity>
-            </Card>
+          <Card key={index} containerStyle={styles.cardContainer}>
+            <Card.Title style={styles.cardTitle}>{zona.nombre}</Card.Title>
+            <TouchableOpacity onPress={() => handleAdministrar(zona)} style={styles.administrarButton}>
+              <Text>Administrar</Text>
+            </TouchableOpacity>
+          </Card>
         ))}
+
       </ScrollView>
     </View>
   );

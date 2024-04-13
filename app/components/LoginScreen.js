@@ -7,21 +7,40 @@ const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigation = useNavigation();
+  const [errorMessage, setErrorMessage] = useState(null);
 
   const handleLogin = () => {
-    console.log('Email:', email);
-    console.log('Password:', password);
-    navigation.navigate('ZonasScreen');
-  };
+    fetch('http://127.0.0.1:8000/api/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            usuario: email,
+            contraseña: password,
+        }),
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.message === 'Inicio de sesión exitoso') {
+          console.log('Inicio de sesión exitoso');
+          navigation.navigate('ZonasScreen', { usuario: data.usuario });
+      } else {
+        setErrorMessage('Woops, credenciales incorrectas');
+      }
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+};
 
   return (
-    
       <View style={styles.container}>
 
         <Text style={styles.title}>Iniciar Sesión</Text>
         <TextInput
           style={styles.input}
-          placeholder="Correo Electrónico"
+          placeholder="Usuario"
           onChangeText={text => setEmail(text)}
           value={email}
           keyboardType="email-address"
@@ -36,6 +55,7 @@ const LoginScreen = () => {
         <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Iniciar Sesión</Text>
       </TouchableOpacity>
+      {errorMessage && <Text style={styles.error}>{errorMessage}</Text>}
       </View>
   );
 };
@@ -51,6 +71,16 @@ const styles = StyleSheet.create({
     display:'flex',
     justifyContent:'center',
     gap:50
+  },
+  error: {
+    color: 'rgba(255,255,255,0.8)',
+    backgroundColor: 'rgb(255,0,0)',
+    borderRadius:10,
+    marginBottom: 20,
+    border: 'none',
+    padding:10,
+    width:'80%',
+    textAlign:'center'
   },
   title: {
     fontSize: 24,

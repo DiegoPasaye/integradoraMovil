@@ -1,27 +1,33 @@
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs'
-import { NavigationContainer} from '@react-navigation/native'
-import {Icon} from 'react-native-elements'
-import React from 'react'
-import LoginScreen from '../components/LoginScreen'
-import ZonasScreen from '../components/ZonasScreen'
-import AdministrarZona from '../components/AdministrarZona'
+import React from 'react';
+import { createStackNavigator } from '@react-navigation/stack';
+import { NavigationContainer } from '@react-navigation/native';
+import LoginScreen from '../components/LoginScreen';
+import ZonasScreen from '../components/ZonasScreen';
+import AdministrarZona from '../components/AdministrarZona';
 
-const TabNavigation = createBottomTabNavigator();
-
-
+const StackNavigation = createStackNavigator();
 
 export default function AppNavigator() {
-
   return (
     <NavigationContainer>
-            <TabNavigation.Navigator initialRouteName='LoginScreen'>
-                <TabNavigation.Screen name="LoginScreen" component={LoginScreen} options={{title:"Login", headerShown:false}}/>
-                <TabNavigation.Screen name="ZonasScreen" component={ZonasScreen} options={{title:"Zonas", headerShown:false}}/>
-                <TabNavigation.Screen name="AdministrarZona" component={AdministrarZona} options={{title:"Administrar zona", headerShown:false}}/>
-            </TabNavigation.Navigator>
+      <StackNavigation.Navigator initialRouteName='LoginScreen'>
+        <StackNavigation.Screen 
+          name="LoginScreen" 
+          component={LoginScreen} 
+          options={{ title:"Login", headerShown:false }}
+        />
+        <StackNavigation.Screen 
+          name="ZonasScreen" 
+          component={ZonasScreen} 
+          options={{ title:"Zonas", headerShown:false }}
+        />
+        <StackNavigation.Screen 
+          name="AdministrarZona" 
+          component={AdministrarZona} 
+          options={{ title:"Administrar zona", headerShown:false }}
+        />
+      </StackNavigation.Navigator>
     </NavigationContainer>
   )
-
-
-  
 }
+
