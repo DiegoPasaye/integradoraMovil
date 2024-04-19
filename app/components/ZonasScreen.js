@@ -2,6 +2,7 @@ import { View, Text, Button, StyleSheet, Image, ScrollView, TouchableOpacity } f
 import { Card } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native'; 
 import { useState, React, useEffect } from 'react';
+import { Ionicons } from '@expo/vector-icons';
 
 const ZonasScreen = ({ route }) => {
   const { usuario } = route.params;
@@ -18,6 +19,9 @@ const ZonasScreen = ({ route }) => {
   const handleAdministrar = (zona) => {
     navigation.navigate('AdministrarZona', { zona: zona.id });
   };
+  const handleUserProfile = () => {
+    navigation.navigate('userProfileScreen');
+  };
   
 
   return (
@@ -26,13 +30,16 @@ const ZonasScreen = ({ route }) => {
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Zonas</Text>
           <Image source={require('../../assets/images/codev.png')} style={styles.headerImage} />
+          <TouchableOpacity onPress={handleUserProfile}>
+          <Ionicons name="person-circle-outline" size={35} color="white" />
+          </TouchableOpacity>
         </View>
 
         {zonas.map((zona, index) => (
           <Card key={index} containerStyle={styles.cardContainer}>
             <Card.Title style={styles.cardTitle}>{zona.nombre}</Card.Title>
             <TouchableOpacity onPress={() => handleAdministrar(zona)} style={styles.administrarButton}>
-              <Text>Administrar</Text>
+              <Text style={styles.administrarText}>Administrar</Text>
             </TouchableOpacity>
           </Card>
         ))}
@@ -65,8 +72,8 @@ const styles = StyleSheet.create({
       color: 'rgba(255, 255, 255, 0.7)', 
     },
     headerImage: {
-      width: 70,
-      height: 70,
+      width: 90,
+      height: 90,
       resizeMode: 'contain',
     },
     cardContainer: {
@@ -93,6 +100,10 @@ const styles = StyleSheet.create({
       borderRadius: 10, 
       color: '#000', 
       padding: 10,
+      textAlign:'center'
+    },
+    administrarText: {
+      textAlign:'center'
     },
   });
   
