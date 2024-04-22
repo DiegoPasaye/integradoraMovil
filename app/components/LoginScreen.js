@@ -29,7 +29,10 @@ const LoginScreen = () => {
     .then(response => response.json())
     .then(data => {
       if (data.message === 'Inicio de sesión exitoso') {
-          navigation.navigate('ZonasScreen', { usuario: data.usuario });
+          navigation.navigate('ZonasScreen', { 
+            usuario: email,
+            zonas: data.usuario
+          });
       } else {
         setErrorMessage('Woops, credenciales incorrectas');
       }
@@ -40,29 +43,15 @@ const LoginScreen = () => {
   });
   
 };
-
-const loginTest = () => {
-  if (email.trim() === '' || password.trim() === '') {
-    setErrorMessage('Por favor, complete todos los campos');
-    return;
-  }
-  if (email === 'diego3' && password === 'diego3') {
-    navigation.navigate('ZonasScreen');
-  } else {
-    setErrorMessage('Credenciales incorrectas');
-  }
-};
   return (
-      <View style={styles.container}>
-        <View style={styles.nav}>
-        <TouchableOpacity style={styles.backButton} onPress={handleGoBack}>
-          <Ionicons name="arrow-back" size={24} color="white" />
-          <Text style={styles.backText}>Regresar</Text>
-        </TouchableOpacity>
-          <Text style={styles.title}>Iniciar Sesión</Text>
-          <Text></Text>
-        </View>
-        <TextInput
+    <View style={styles.container}>
+      <TouchableOpacity style={styles.backButton} onPress={handleGoBack}>
+        <Ionicons name="arrow-back" size={30} color="white" />
+      </TouchableOpacity>
+      <View style={styles.nav}>
+        <Text style={styles.title}>Iniciar Sesión</Text>
+      </View>
+      <TextInput
           style={styles.input}
           placeholder="Usuario"
           onChangeText={text => setEmail(text)}
@@ -90,19 +79,19 @@ const styles = StyleSheet.create({
   nav:{
     display:'flex',
     flexDirection:'row',
-    justifyContent: 'space-between',
     alignItems:'center',
-    width:'100%'
-  },
-  backText:{
-    color: 'rgba(255,255,255,0.8)',
-    fontSize:18,
-    marginLeft: 5,
+    justifyContent: 'center',
+    width:'100%',
+    marginBottom:50,
   },
   backButton: {
+    position: 'absolute',
+    top: 40,
+    left: 40,
     flexDirection: 'row',
     alignItems: 'center',
   },
+  
   container: {
     flex: 1,
     alignItems: 'center',

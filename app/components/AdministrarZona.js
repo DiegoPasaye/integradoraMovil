@@ -1,10 +1,14 @@
 import React, {useState, useEffect} from 'react';
-import { View, Text, Button, StyleSheet, FlatList } from 'react-native';
+import { View, Text, Button, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 
 const AdministrarZona = ({ route }) => {
   const { zona } = route.params || {};
   const [zonaData, setZonaData] = useState(null);
   const [accesosData, setAccesosData] = useState([]);
+  const navigation = useNavigation();
+
 
   useEffect(() => {
     fetch(`http://127.0.0.1:8000/api/zonas?ids=${zona}`)
@@ -21,12 +25,24 @@ const AdministrarZona = ({ route }) => {
       .catch(error => console.error('Error:', error));
   }, [zona]);
 
+  const handleGoBack = () => {
+    navigation.goBack();
+  };
+
   return (
     <View style={styles.container}>
-      {/* Header */}
+      <TouchableOpacity style={styles.backButton} onPress={handleGoBack}>
+        <Ionicons style={styles.icon} name="arrow-back" size={28} color="white" />
+      </TouchableOpacity>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>{zonaData ? zonaData.nombre : 'Cargando...'}</Text>
         <Button style={styles.offButton} title="Apagar" onPress={handleApagar} />
+      </View>
+
+      <View style={styles.row}>
+        <Text style={styles.cell}>ID</Text>
+        <Text style={styles.cell}>Fecha</Text>
+        <Text style={styles.cell}>ID de la Zona</Text>
       </View>
 
       <FlatList
@@ -48,6 +64,7 @@ const AdministrarZona = ({ route }) => {
   );
 };
 
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -60,6 +77,13 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
   },
+  backButton: {
+    position: 'absolute',
+    top: 40,
+    left: 40,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   cell: {
     flex: 1,
     textAlign: 'center',
@@ -71,8 +95,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 20, 
-    marginBottom: 10, 
+    marginTop: 40, 
+    marginBottom: 30, 
   },
   offButton:{
     padding:10,
@@ -83,10 +107,11 @@ const styles = StyleSheet.create({
     color:'rgba(255,255,255,0.7)'
   },
   headerTitle: {
-    fontSize: 20,
+    fontSize: 16,
     fontWeight: 'bold',
     color: 'rgba(255, 255, 255, 0.7)',
   },
 });
 
 export default AdministrarZona;
+

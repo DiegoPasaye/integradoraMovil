@@ -12,7 +12,7 @@ const StackNavigation = createStackNavigator();
 export default function AppNavigator() {
   return (
     <NavigationContainer>
-      <StackNavigation.Navigator initialRouteName='LoginScreen'>
+      <StackNavigation.Navigator initialRouteName='IndexScreen'>
         <StackNavigation.Screen 
           name="LoginScreen" 
           component={LoginScreen} 

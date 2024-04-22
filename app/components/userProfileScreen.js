@@ -4,9 +4,13 @@ import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { useNavigation } from '@react-navigation/native';
 
-const userProfileScreen = () => {
+const userProfileScreen = ({ route }) => {
+  const { usuario } = route.params;
   const [userPhoto, setUserPhoto] = useState(require('../../assets/images/userImage.webp'));
   const navigation = useNavigation();
+  const [oldPassword, setOldPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
 
   useEffect(() => {
   }, [userPhoto]);
@@ -16,14 +20,85 @@ const userProfileScreen = () => {
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [1, 1],
-      quality: 1,
+      quality: 0.5,
     });
 
     if (!result.cancelled) {
       setUserPhoto({ uri: result.assets[0].uri });
-    }    
+
+      const body = {
+        usuario: usuario,
+        photoUrl: result.assets[0].uri,
+      };
+      console.log('Cuerpo de la solicitud:', body);
+      try {
+        const response = await fetch('http://127.0.0.1:8000/api/update-photo', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(body),
+        });
+
+      } catch (error) {
+        console.error('Error al actualizar la foto:', error);
+        alert('Error al actualizar la foto');
+      }
+    }
+};
+
+  
+const handleChangePassword = async () => {
+  if (newPassword !== confirmNewPassword) {
+    alert('La nueva contraseña y la confirmación no coinciden');
+    return;
+  }
+
+  const body = {
+    usuario: usuario,
+    oldPassword: oldPassword,
+    newPassword: newPassword,
   };
 
+  console.log('Cuerpo de la solicitud:', body);
+
+  try {
+    const response = await fetch('http://127.0.0.1:8000/api/change-password', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+
+    // Resto del código...
+  } catch (error) {
+    console.error('Error al cambiar la contraseña:', error);
+    alert('Error al cambiar la contraseña');
+  }
+};
+
+
+useEffect(() => {
+  const getUserProfile = async () => {
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/api/user-profile?usuario=${usuario}`);
+      const data = await response.json();
+
+      const userPhoto = { uri: data.photoUrl };
+
+      setUserPhoto(userPhoto);
+    } catch (error) {
+      console.error('Error al recuperar el perfil del usuario:', error);
+      alert('Error al recuperar el perfil del usuario');
+    }
+  };
+
+  getUserProfile();
+}, []);
+
+
+  
   const handleGoBack = () => {
     navigation.goBack();
   };
@@ -31,24 +106,42 @@ const userProfileScreen = () => {
   return (
     <View style={styles.container}>
         <TouchableOpacity style={styles.backButton} onPress={handleGoBack}>
-          <Ionicons name="arrow-back" size={24} color="white" />
-          <Text style={styles.backText}>Regresar</Text>
+          <Ionicons name="arrow-back" size={30} color="white" />
         </TouchableOpacity>
       <Image source={userPhoto} style={styles.userPhoto} />
 
       <TouchableOpacity style={styles.modifyButton} onPress={handleChoosePhoto}>
-        <Ionicons name="camera-outline" size={24} color="white" />
+        <Ionicons name="camera-outline" size={20} color="white" />
         <Text style={styles.modifyButtonText}>Modificar foto</Text>
       </TouchableOpacity>
 
-      <TextInput style={styles.input} placeholder="Nombre de usuario" placeholderTextColor="white" />
-
       <Text style={styles.changePasswordText}>¿Deseas cambiar tu contraseña?</Text>
-      <TextInput style={styles.input} placeholder="Introduce tu contraseña" secureTextEntry={true} placeholderTextColor="white" />
-      <TextInput style={styles.input} placeholder="Nueva contraseña" secureTextEntry={true} placeholderTextColor="white" />
-      <TextInput style={styles.input} placeholder="Repite la nueva contraseña" secureTextEntry={true} placeholderTextColor="white" />
+      <TextInput
+      style={styles.input}
+      placeholder="Introduce tu contraseña"
+      secureTextEntry={true}
+      placeholderTextColor="white"
+      value={oldPassword}
+      onChangeText={setOldPassword}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Repite la nueva contraseña"
+        secureTextEntry={true}
+        placeholderTextColor="white"
+        value={newPassword}
+        onChangeText={setNewPassword}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Confirma la nueva contraseña"
+        secureTextEntry={true}
+        placeholderTextColor="white"
+        value={confirmNewPassword}
+        onChangeText={setConfirmNewPassword}
+      />
 
-      <TouchableOpacity style={styles.modifyButton}>
+      <TouchableOpacity style={styles.modifyButton2} onPress={handleChangePassword}>
         <Text style={styles.modifyButtonText}>Guardar cambios</Text>
       </TouchableOpacity>
 
@@ -78,6 +171,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: 'blue',
+    padding: 9,
+    borderRadius: 5,
+    marginBottom: 20,
+  },
+  modifyButton2: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'blue',
     padding: 10,
     borderRadius: 5,
     marginBottom: 20,
@@ -99,18 +200,13 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     color:'rgba(255,255,255,0.8)'
   },
-  backText:{
-    color: 'rgba(255,255,255,0.8)',
-    fontSize:18,
-    marginLeft: 5,
-  },
+
   backButton: {
-    display: 'flex',
+    position: 'absolute',
+    top: 40,
+    left: 40,
     flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'flex-start',
-    marginRight: 250,
-    marginBottom: 20
+    alignItems: 'center',
   },
 });
 
